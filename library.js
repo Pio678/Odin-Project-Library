@@ -11,9 +11,24 @@ const page = document.querySelector("body");
 
 //event delegation
 libraryContainer.addEventListener("click", (event) => {
+  //index is the index of clicked element in myLibrary array
+
   if (event.target.className === "delete-book-button") {
-    let index = event.target.getAttribute("data-index");
+    let index = event.target.parentElement.getAttribute("data-index");
     deleteBookByIndex(index);
+    console.log(index);
+  } else if (event.target.className === "is-read-checkbox") {
+    let index =
+      event.target.parentElement.parentElement.getAttribute("data-index");
+    myLibrary[index].isRead = !myLibrary[index].isRead;
+
+    let isReadText = event.target.parentElement.firstChild;
+    if (myLibrary[index].isRead === true) {
+      isReadText.innerText = "read";
+    } else {
+      isReadText.innerText = "not read";
+    }
+    saveLibrary();
   }
 });
 
@@ -35,11 +50,15 @@ function LoadFromLocalStorage() {
   displayLibrary();
 }
 
+function saveLibrary() {
+  let myLibraryJSON = JSON.stringify(myLibrary);
+  localStorage.setItem("myLibrary", myLibraryJSON);
+}
+
 function deleteBookByIndex(index) {
   myLibrary.splice(index, 1);
 
-  let myLibraryJSON = JSON.stringify(myLibrary);
-  localStorage.setItem("myLibrary", myLibraryJSON);
+  saveLibrary();
   clearLibraryDisplay();
   displayLibrary();
 }
@@ -85,9 +104,7 @@ function Book(title, author, numberOfPages, isRead) {
 function addBookToLibrary(newBook) {
   myLibrary.push(newBook);
 
-  let myLibraryJSON = JSON.stringify(myLibrary);
-
-  localStorage.setItem("myLibrary", myLibraryJSON);
+  saveLibrary();
 }
 
 //clears all books from html
@@ -108,6 +125,7 @@ function displayLibrary() {
 function displayBook(newBook, index) {
   const bookContainer = document.createElement("div");
   bookContainer.classList.add("book-container");
+  bookContainer.setAttribute("data-index", index);
 
   const bookTitle = document.createElement("p");
   bookTitle.classList.add("book-title");
@@ -121,24 +139,32 @@ function displayBook(newBook, index) {
   numberOfPages.classList.add("number-of-pages");
   numberOfPages.innerText = newBook.numberOfPages + " pages";
 
-  const isBookRead = document.createElement("p");
-  isBookRead.classList.add("is-book-read");
+  const isReadContainer = document.createElement("div");
+  isReadContainer.classList.add("is-read-container");
+
+  const isReadText = document.createElement("p");
+
+  const isReadCheckbox = document.createElement("input");
+  isReadCheckbox.classList.add("is-read-checkbox");
+  isReadCheckbox.setAttribute("type", "checkbox");
 
   if (newBook.isRead === true) {
-    isBookRead.innerText = "you have read this book";
+    isReadCheckbox.checked = true;
+    isReadText.innerText = "read";
   } else {
-    isBookRead.innerText = "you have NOT read this book";
+    isReadText.innerText = " not read";
   }
 
   const deleteBookBtn = document.createElement("button");
   deleteBookBtn.classList.add("delete-book-button");
-  deleteBookBtn.innerText = "delete";
-  deleteBookBtn.setAttribute("data-index", index);
+  deleteBookBtn.innerText = "Delete";
 
   bookContainer.appendChild(bookTitle);
   bookContainer.appendChild(author);
   bookContainer.appendChild(numberOfPages);
-  bookContainer.appendChild(isBookRead);
+  bookContainer.appendChild(isReadContainer);
+  isReadContainer.appendChild(isReadText);
+  isReadContainer.appendChild(isReadCheckbox);
   bookContainer.appendChild(deleteBookBtn);
 
   libraryContainer.appendChild(bookContainer);

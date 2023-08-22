@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./images/books1.png" />
+    <link rel="stylesheet" href="./css/normalize.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <title>Library</title>
+  </head>
+  <body>
+    <header>
+      <img class="header-icon" src="./images/books2.png" alt="image of books" />
+      <h1>Your Library</h1>
+    </header>
+
+    <main>
+      <button class="add-book-button">Add Book</button>
+
+      <div class="library-container"></div>
+
+      <div class="" id="popup">
+        <form id="new-book-form" action="">
+          <fieldset>
+            <div class="popup-header">
+              <h2>Add new book to your library</h2>
+              <button class="close-button">&times</button>
+            </div>
+
+            <div class="field">
+              <label for="title" class="field-label">Title</label>
+              <input id="title" name="title" class="field-input" type="text" />
+            </div>
+            <div class="field">
+              <label for="author" class="field-label">Author</label>
+              <input
+                id="author"
+                name="author"
+                class="field-input"
+                type="text"
+              />
+            </div>
+            <div class="field">
+              <label for="number-of-pages" class="field-label"
+                >Number of pages</label
+              >
+              <input
+                id="number-of-pages"
+                name="number-of-pages"
+                class="field-input"
+                type="number"
+              />
+            </div>
+            <div class="field is-read-field">
+              <label for="is-read" class="field-label"
+                >Did you read the book</label
+              >
+              <input
+                id="is-read"
+                name="is-read"
+                class="field-input"
+                type="checkbox"
+              />
+            </div>
+            <button type="submit">Add Book</button>
+          </fieldset>
+        </form>
+      </div>
+      <div class="" id="overlay"></div>
+    </main>
+  </body>
+  <script src="./library.js"></script>
+</html>

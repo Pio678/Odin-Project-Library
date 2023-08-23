@@ -46,7 +46,12 @@ newBookForm.addEventListener("submit", (e) => {
 
 function LoadFromLocalStorage() {
   let myLibraryJSON = localStorage.getItem("myLibrary");
-  myLibrary = JSON.parse(myLibraryJSON);
+
+  let localStorageLibrary = JSON.parse(myLibraryJSON);
+
+  if (localStorageLibrary !== null) {
+    myLibrary = localStorageLibrary;
+  }
   displayLibrary();
 }
 

@@ -1,4 +1,8 @@
-let myLibrary = [];
+import { Book } from "./BookClass.js";
+
+import { Library } from "./LibraryClass.js";
+
+let myLibrary = new Library();
 
 const libraryContainer = document.querySelector(".library-container");
 const addBookBtn = document.querySelector(".add-book-button");
@@ -7,32 +11,39 @@ const overlay = document.querySelector("#overlay");
 const closePopupBtn = document.querySelector(".close-button");
 const newBookForm = document.querySelector("#new-book-form");
 const deleteBookButtons = document.querySelectorAll(".delete-book-button");
-const page = document.querySelector("body");
 
 //event delegation
 libraryContainer.addEventListener("click", (event) => {
   //index is the index of clicked element in myLibrary array
 
+  console.log("clicked");
+
   if (event.target.className === "delete-book-button") {
     let index = event.target.parentElement.getAttribute("data-index");
-    deleteBookByIndex(index);
-    console.log(index);
+    myLibrary.deleteBookByIndex(index);
+    myLibrary.saveLibrary();
+    displayLibrary();
   } else if (event.target.className === "is-read-checkbox") {
     let index =
       event.target.parentElement.parentElement.getAttribute("data-index");
-    myLibrary[index].isRead = !myLibrary[index].isRead;
+    myLibrary._bookCatalog[index].isRead =
+      !myLibrary._bookCatalog[index].isRead;
 
     let isReadText = event.target.parentElement.firstChild;
-    if (myLibrary[index].isRead === true) {
+    if (myLibrary._bookCatalog[index].isRead === true) {
       isReadText.innerText = "read";
     } else {
       isReadText.innerText = "not read";
     }
-    saveLibrary();
+    myLibrary.saveLibrary();
+    displayLibrary();
   }
 });
 
-window.addEventListener("load", LoadFromLocalStorage);
+window.addEventListener("load", () => {
+  myLibrary.LoadFromLocalStorage();
+  displayLibrary();
+});
 
 addBookBtn.addEventListener("click", openAddBookPopup);
 
@@ -43,30 +54,6 @@ newBookForm.addEventListener("submit", (e) => {
   const formData = new FormData(newBookForm);
   addBookFromForm(formData);
 });
-
-function LoadFromLocalStorage() {
-  let myLibraryJSON = localStorage.getItem("myLibrary");
-
-  let localStorageLibrary = JSON.parse(myLibraryJSON);
-
-  if (localStorageLibrary !== null) {
-    myLibrary = localStorageLibrary;
-  }
-  displayLibrary();
-}
-
-function saveLibrary() {
-  let myLibraryJSON = JSON.stringify(myLibrary);
-  localStorage.setItem("myLibrary", myLibraryJSON);
-}
-
-function deleteBookByIndex(index) {
-  myLibrary.splice(index, 1);
-
-  saveLibrary();
-  clearLibraryDisplay();
-  displayLibrary();
-}
 
 function addBookFromForm(formData) {
   let author = formData.get("author");
@@ -82,9 +69,9 @@ function addBookFromForm(formData) {
 
   let newBook = new Book(title, author, numberOfPages, isRead);
   console.log(newBook);
-  addBookToLibrary(newBook);
+  myLibrary.addBookToLibrary(newBook);
 
-  clearLibraryDisplay();
+  libraryContainer.innerHTML = "";
   displayLibrary();
 }
 
@@ -98,33 +85,17 @@ function closeAddBookPopup() {
   overlay.classList.remove("active");
 }
 
-//Book object contructor
-function Book(title, author, numberOfPages, isRead) {
-  this.title = title;
-  this.author = author;
-  this.numberOfPages = numberOfPages;
-  this.isRead = isRead;
-}
-
-function addBookToLibrary(newBook) {
-  myLibrary.push(newBook);
-
-  saveLibrary();
-}
-
-//clears all books from html
-function clearLibraryDisplay() {
-  const libraryDisplay = document.querySelectorAll(".book-container");
-  for (book of libraryDisplay) {
-    libraryContainer.removeChild(book);
-  }
-}
-
 //displays all books in Html
 function displayLibrary() {
-  for (let i = 0; i < myLibrary.length; i++) {
-    displayBook(myLibrary[i], i);
-  }
+  libraryContainer.innerHTML = "";
+  console.log("display Library");
+  console.log(myLibrary._bookCatalog);
+
+  let i = 0;
+
+  myLibrary._bookCatalog.forEach((book) => {
+    displayBook(book, i++);
+  });
 }
 
 function displayBook(newBook, index) {
@@ -134,15 +105,15 @@ function displayBook(newBook, index) {
 
   const bookTitle = document.createElement("p");
   bookTitle.classList.add("book-title");
-  bookTitle.innerText = newBook.title;
+  bookTitle.innerText = newBook._title;
 
   const author = document.createElement("p");
   author.classList.add("author");
-  author.innerText = "By: " + newBook.author;
+  author.innerText = "By: " + newBook._author;
 
   const numberOfPages = document.createElement("p");
   numberOfPages.classList.add("number-of-pages");
-  numberOfPages.innerText = newBook.numberOfPages + " pages";
+  numberOfPages.innerText = newBook._numberOfPages + " pages";
 
   const isReadContainer = document.createElement("div");
   isReadContainer.classList.add("is-read-container");
@@ -175,16 +146,7 @@ function displayBook(newBook, index) {
   libraryContainer.appendChild(bookContainer);
 }
 
-//function deletes all books from local storage
-function deleteAllBooks() {
-  for (let i = 0; i < myLibrary.length; i++) {
-    myLibrary.pop();
-  }
-  clearLibraryDisplay();
+//let book = new Book("lotr", "tolkien", 904, true);
 
-  let myLibraryJSON = JSON.stringify(myLibrary);
-
-  localStorage.setItem("myLibrary", myLibraryJSON);
-}
-
-displayLibrary();
+// //myLibrary.LoadFromLocalStorage();
+// displayLibrary();
